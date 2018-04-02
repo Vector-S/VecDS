@@ -1,6 +1,12 @@
 import pandas as pd
 import gc
 
+
+
+
+
+
+
 def f_template(df, gb_dict):
     
     all_features = list(set(gb_dict['groupby'] + [gb_dict['select']]))
@@ -59,7 +65,7 @@ def f_2(df):
                         - 1 * df['hour'].isin(least_freq_hours_in_test_data)).astype('uint8')
     gp = df[['ip', 'day', 'in_test_hh', 'channel']].groupby(by=['ip', 'day', 'in_test_hh'])[
         ['channel']].count().reset_index().rename(index=str, columns={'channel': 'nip_day_test_hh'})
-    df = df.merge(gp, on=['ip', 'day', 'in_test_hh'], how='left')
+    df = df.merge(gp, on=['ip', 'day', 'in_test_hh'], how='left', inplace =True)
     df.drop(['in_test_hh'], axis=1, inplace=True)
     df['nip_day_test_hh'] = df['nip_day_test_hh'].astype('uint32')
     del gp
@@ -92,7 +98,7 @@ def f_5(df):
     feature_drop=[]
     gp = df[['device', 'channel']].groupby(by=['device'])[
         ['channel']].count().reset_index().rename(index=str, columns={'channel': 'dev_count'})
-    df = df.merge(gp, on=['device'], how='left')   
+    df = df.merge(gp, on=['device'], how='left')
     del gp
     gc.collect()
     return feature_add,feature_drop
