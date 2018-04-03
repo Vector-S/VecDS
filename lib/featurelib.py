@@ -58,9 +58,79 @@ def f_2(df):
     gc.collect()
     return df, df.columns.values.tolist()
 
-def f_3(df):
-    gb_dict = {'groupby': ['ip', 'app'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+def f_c_1_1(df):
+    # Count, for ip
+    gb_dict = {'groupby': ['ip'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
     return f_template(df, gb_dict)
+
+def f_c_1_2(df):
+    # Count, for app
+    gb_dict = {'groupby': ['app'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_1_3(df):
+    # Count, for device
+    gb_dict = {'groupby': ['device'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_1_4(df):
+    # Count, for os
+    gb_dict = {'groupby': ['os'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_1_5(df):
+    # Count, for channel
+    gb_dict = {'groupby': ['channel'], 'select': 'os', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_2_1(df):
+    # Count, for ip-app
+    gb_dict = {'groupby': ['ip', 'app'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}  
+    return f_template(df, gb_dict)   
+
+def f_c_2_2(df):
+    # Count, for ip-day
+    gb_dict = {'groupby': ['ip','day'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_2_3(df):
+    # Count, for ip-hour
+    gb_dict = {'groupby': ['ip','hour'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_3_1(df):
+    # Count, for ip-day-hour
+    gb_dict = {'groupby': ['ip','day','hour'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_3_2(df):
+    # Count, for ip-app-os
+    gb_dict = {'groupby': ['ip', 'app', 'os'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+def f_c_4_1(df):
+    # Count, for ip-app-day-hour
+    gb_dict = {'groupby': ['ip','app','day','hour'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
+    return f_template(df, gb_dict)
+
+    # # Mean hour, for ip-app-channel
+    # {'groupby': ['ip','app','channel'], 'select': 'hour', 'agg': 'mean', 'type': 'float32', 'type': 'float32'}
+
+    # # Variance in day, for ip-app-channel
+    # {'groupby': ['ip','app','channel'], 'select': 'day', 'agg': 'var', 'type': 'float32'}
+    # # Variance in day, for ip-app-device
+    # {'groupby': ['ip','app','device'], 'select': 'day', 'agg': 'var', 'type': 'float32'}
+    # # Variance in day, for ip-app-os
+    # {'groupby': ['ip','app','os'], 'select': 'day', 'agg': 'var', 'type': 'float32'}
+
+    # # Variance in hour, for ip-app-channel
+    # {'groupby': ['ip','app','channel'], 'select': 'hour', 'agg': 'var'}
+    # # Variance in hour, for ip-app-device
+    # {'groupby': ['ip','app','device'], 'select': 'hour', 'agg': 'var'}
+    # # Variance in hour, for ip-app-os
+    # {'groupby': ['ip','app','os'], 'select': 'hour', 'agg': 'var'}
+
+
 
 
 if __name__ == "__main__":
