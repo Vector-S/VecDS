@@ -21,9 +21,7 @@ def f_template(df, gb_dict):
     return df,new_feature
 
 def f_base(df,fs):
-    df.drop(['attributed_time', 'is_attributed'], axis=1, inplace=True)
     fs= fs | {'ip', 'app', 'device', 'os', 'channel'}
-    gc.collect()
     return df, fs
 
 
@@ -40,7 +38,8 @@ def f_1_2(df,fs):
     df['click_rnd']=click_time.dt.round('H')
     df['hour'] = pd.to_datetime(df.click_rnd).dt.hour.astype('uint8')
     df['day'] = pd.to_datetime(df.click_rnd).dt.day.astype('uint8')
-    fs =fs|{'click_rnd','hour','day'}
+    df.drop('click_rnd',axis=1,inplace=True)
+    fs =fs|{'hour','day'}
     gc.collect()
     return df, fs
 
@@ -166,11 +165,11 @@ if __name__ == "__main__":
 
     ## test f_1
     train_df, fs = f_1_2(train_df, fs)
-    assert fs == {'ip', 'app', 'device', 'os', 'channel', 'hour', 'day', 'click_rnd'}
+    assert fs == {'ip', 'app', 'device', 'os', 'channel', 'hour', 'day'}
 
     ## test f_2
     train_df, fs = f_2(train_df, fs)
-    assert fs == {'ip', 'app', 'device', 'os', 'channel', 'hour', 'day', 'click_rnd','nip_day_test_hh'}
+    assert fs == {'ip', 'app', 'device', 'os', 'channel', 'hour', 'day','nip_day_test_hh'}
 
     ## test f_template
     gb_dict1 = {'groupby': ['ip'], 'select': 'channel', 'agg': 'count', 'type': 'float32', 'type': 'float32'}

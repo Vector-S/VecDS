@@ -4,25 +4,25 @@ from sklearn.cross_validation import train_test_split
 import gc
 
 
-def xgb_train(train_df,label_df,is_valid=False):
-    params = {'eta': 0.3,
-              'tree_method': "hist",
-              'grow_policy': "lossguide",
-              'max_leaves': 1400,
-              'max_depth': 0,
-              'subsample': 0.9,
-              'colsample_bytree': 0.7,
-              'colsample_bylevel': 0.7,
-              'min_child_weight': 0,
-              'alpha': 4,
-              'objective': 'binary:logistic',
-              'scale_pos_weight': 9,
-              'eval_metric': 'auc',
-              'nthread': 8,
-              'random_state': 99,
-              'silent': True}
-
-    if (is_valid == True):
+def xgb_train(train_df, label_df, validate=False, params=None):
+    if not params:
+        params = {'eta': 0.3,
+                  'tree_method': "auto",
+                  'grow_policy': "lossguide",
+                  'max_leaves': 1400,
+                  'max_depth': 0,
+                  'subsample': 0.9,
+                  'colsample_bytree': 0.7,
+                  'colsample_bylevel': 0.7,
+                  'min_child_weight': 0,
+                  'alpha': 4,
+                  'objective': 'binary:logistic',
+                  'scale_pos_weight': 9,
+                  'eval_metric': 'auc',
+                  'nthread': 8,
+                  'random_state': 99,
+                  'silent': True}
+    if (validate == True):
         # Get 10% of train dataset to use as validation
         x1, x2, y1, y2 = train_test_split(train_df, label_df, test_size=0.1, random_state=99)
         dtrain = xgb.DMatrix(x1, y1)
@@ -45,6 +45,6 @@ def xgb_predict(model,test_df):
     dtest = xgb.DMatrix(test_df)
     del test_df
     gc.collect()
-    prediction = pd.DataFrame
+    prediction = pd.DataFrame()
     prediction['is_attributed'] = model.predict(dtest, ntree_limit=model.best_ntree_limit)
     return prediction

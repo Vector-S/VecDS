@@ -12,13 +12,14 @@ MAX_ROUNDS = 1000
 EARLY_STOP = 50
 OPT_ROUNDS = 650
 SKIP_ROWS = range(1, 109903891)
-TRAIN_ROWS = 8000
+TRAIN_ROWS = 1000
 TEST_ROWS = 1000
 
 ##########################################         Path           #####################################
 
 output_filename = 'submission.csv'
 input_path = '../input/'
+output_path = '../output/'
 
 ########################################## Common Info #################################################
 
@@ -37,7 +38,7 @@ test_cols = ['ip', 'app', 'device', 'os', 'channel', 'click_time', 'click_id']
 ####################################################################################################
 
 def load_dataset():
-    print(r"\n******Loading data...\n")
+    print("\n------ Loading Data ------\n")
     tic =time.time()
     train_df = pd.read_csv(input_path + "train.csv", skiprows=SKIP_ROWS, nrows=TRAIN_ROWS, dtype=dtypes, usecols=train_cols)
     test_df = pd.read_csv(input_path + "test.csv", dtype=dtypes, nrows=TEST_ROWS, usecols =test_cols)
@@ -49,6 +50,8 @@ def load_dataset():
     return train_df,test_df
 
 train_df,test_df = load_dataset()
+label_df = train_df['is_attributed']
+train_df.drop('is_attributed',axis=1,inplace=True)
 
 
 
@@ -58,6 +61,8 @@ def build_features(df, feature_pipeline):
     feature_set=set()
     for fun in feature_pipeline:
         df, feature_set=fun(df, feature_set)
+    df = df[list(feature_set)]
+    gc.collect()
     return df, feature_set
 
 from lib.featurelib import *
@@ -76,25 +81,17 @@ print(train_df.size)
 
 pass
 
-
-label_df = train_df['is_attributed']
-
-
 print("\n------ Model training...------\n")
-if VALIDATE:
-    pass
-
-else:
-    pass
-
 from lib.modellib import *
+model = xgb_train(train_df, label_df, validate=VALIDATE)
 
-model = xgb_train(train_df,label_df,is_valid=False)
+
 print("\n------ Making Prediction...------\n")
 prediction = xgb_predict(model,test_df)
-prediction.to_csv('prediction.csv', float_format='%.8f', index=False)
+
 
 print("\n------ Prediction Saved ! ------\n")
+prediction.to_csv(output_path + output_filename, float_format='%.8f', index=False)
 pass
 
 
