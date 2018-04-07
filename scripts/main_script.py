@@ -12,8 +12,8 @@ MAX_ROUNDS = 1000
 EARLY_STOP = 50
 OPT_ROUNDS = 650
 SKIP_ROWS = range(1, 109903891)
-TRAIN_ROWS = 80000
-TEST_ROWS = 10000
+TRAIN_ROWS = 8000
+TEST_ROWS = 1000
 
 ##########################################         Path           #####################################
 
@@ -50,32 +50,52 @@ def load_dataset():
 
 train_df,test_df = load_dataset()
 
-def build_features(train_df,feature_pipeline):
+
+
+
+
+def build_features(df, feature_pipeline):
     feature_set=set()
     for fun in feature_pipeline:
-        train_df,feature_set=fun(train_df,feature_set)
-    return train_df,feature_set
+        df, feature_set=fun(df, feature_set)
+    return df, feature_set
 
 from lib.featurelib import *
 
-f_pipeline = [f_base,f_1,f_2]
-print("Building feature...")
+
+f_pipeline = [f_base,f_1,f_1_2,f_2]
+print("Building train feature...")
+
 tic = time.time()
 train_df,feature_set = build_features(train_df,f_pipeline)
+test_df, feature_set = build_features(test_df,f_pipeline)
 toc = time.time()
 print("Feature built, time cost - [{0:.4g}], feature selected - [{1}]".format(toc-tic,','.join(feature_set)))
 print(feature_set)
 print(train_df.size)
+
 pass
 
 
+label_df = train_df['is_attributed']
 
-print(r"\n******Model training...******\n")
+
+print("\n------ Model training...------\n")
 if VALIDATE:
     pass
 
 else:
     pass
+
+from lib.modellib import *
+
+model = xgb_train(train_df,label_df,is_valid=False)
+print("\n------ Making Prediction...------\n")
+prediction = xgb_predict(model,test_df)
+prediction.to_csv('prediction.csv', float_format='%.8f', index=False)
+
+print("\n------ Prediction Saved ! ------\n")
+pass
 
 
 
