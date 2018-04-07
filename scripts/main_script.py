@@ -3,9 +3,11 @@ from sklearn.model_selection import train_test_split  # for validation
 import gc  # memory
 from datetime import datetime  # train time checking
 import time
+import sys
+sys.path.append("/Users/ruixuezhang/Desktop/KaggleTAFDC")
 
 ########################################## Macro Control Panel #####################################
-VALIDATE = False
+VALIDATE = True
 RANDOM_STATE = 50
 VALID_SIZE = 0.90
 MAX_ROUNDS = 1000
@@ -83,7 +85,7 @@ pass
 
 print("\n------ Model training...------\n")
 from lib.modellib import *
-model = xgb_train(train_df, label_df, validate=VALIDATE)
+model = xgb_train(train_df, label_df, useTrainCV=VALIDATE)
 
 
 print("\n------ Making Prediction...------\n")
