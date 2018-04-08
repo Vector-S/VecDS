@@ -18,88 +18,124 @@ SKIP_ROWS=range(1,109903891)
 TRAIN_ROWS=5000
 TEST_ROWS=100
 
-
+FEATURE_PPL = [f_base,f_1,f_1_2,f_2]
+METHOD = 'xgb'
 ##########################################         Path           #####################################
 
-output_filename = 'submission.csv'
-input_path = '../input/'
-output_path = '../output/'
 
-########################################## Common Info #################################################
 
-dtypes = {
-    'ip': 'uint32',
-    'app': 'uint16',
-    'device': 'uint16',
-    'os': 'uint16',
-    'channel': 'uint16',
-    'is_attributed': 'uint8',
-    'click_id': 'uint32'
-}
-train_cols = ['ip', 'app', 'device', 'os', 'channel', 'click_time', 'is_attributed']
-test_cols = ['ip', 'app', 'device', 'os', 'channel', 'click_time', 'click_id']
+########################################## Solution Class #################################################
 
-####################################################################################################
+class Solution:
+    output_filename = 'submission.csv'
+    input_path = '../input/'
+    output_path = '../output/'
+    train_file = 'train.csv'
+    test_file = 'test.csv'
 
-def load_dataset():
+    def __init__(self):
+        train_df = None
+        label_df = None
+        test_df = None
+        f_ppl = []
+        train_f_set = None
+        test_f_set =None
+        model = None
+        train_result = None
+        test_result = None
+        log= None
+        method = None
 
-    train_df = pd.read_csv(input_path + "train.csv", skiprows=SKIP_ROWS, nrows=TRAIN_ROWS, dtype=dtypes, usecols=train_cols)
-    test_df = pd.read_csv(input_path + "test.csv", dtype=dtypes, nrows=TEST_ROWS, usecols =test_cols)
+    def load_data(self):
+        train_cols = ['ip', 'app', 'device', 'os', 'channel', 'click_time', 'is_attributed']
+        test_cols = ['ip', 'app', 'device', 'os', 'channel', 'click_time', 'click_id']
+        dtypes = {
+            'ip': 'uint32',
+            'app': 'uint16',
+            'device': 'uint16',
+            'os': 'uint16',
+            'channel': 'uint16',
+            'is_attributed': 'uint8',
+            'click_id': 'uint32'
+        }
+        self.train_df = pd.read_csv(self.input_path+self.train_file, skiprows=SKIP_ROWS, nrows=TRAIN_ROWS, dtype=dtypes,
+                               usecols=train_cols)
+        self.test_df = pd.read_csv(self.input_path +self.test_file, dtype=dtypes, nrows=TEST_ROWS, usecols=test_cols)
+        self.label_df = self.train_df['is_attributed']
 
-    gc.collect()
-    return train_df,test_df
+    def build_features(self):
+        self.train_df,self.train_f_set = build_features(self.train_df,self.f_ppl)
+        self.test_df,self.test_f_set = build_features(self.test_df,self.f_ppl)
+        print("Feature Selected:\t{0}".format(','.join(self.train_f_set)))
 
-tic = time.time()
+    def init_model(self):
+        if self.method == 'xgb':
+            xgb_init(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def para_tune(self):
+        if self.method == 'xgb':
+            xgb_pt(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def train(self):
+        if self.method == 'xgb':
+            xgb_train(self)
+            xgb_save_fi(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def test(self):
+        if self.method == 'xgb':
+            xgb_test(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def save_test(self):
+        self.test_result.to_csv(self.output_path + self.output_filename, float_format='%.8f', index=False)
+
+
+
+
+########################################## Solution Excution #################################################
+s = Solution()
+s.method = METHOD
+
 report("Load Dataset Start")
-train_df,test_df = load_dataset()
+tic = time.time()
+s.load_data()
 report("Load Dataset Done",tic)
 
 
-label_df = train_df['is_attributed']
-print("Train data size: {0}".format(train_df.shape))
-print("Test data size: {0}".format(test_df.shape))
-
-train_df.drop('is_attributed', axis=1, inplace=True)
-
-
-
-def build_features(df, feature_pipeline):
-    feature_set=set()
-    for fun in feature_pipeline:
-        df, feature_set=fun(df, feature_set)
-    df = df[list(feature_set)]
-    gc.collect()
-    return df, feature_set
-
-
-f_pipeline = [f_base,f_1,f_1_2,f_2]
-report("Build Features Start")
-
 tic = time.time()
-train_df,feature_set = build_features(train_df,f_pipeline)
-test_df,feature_set = build_features(test_df,f_pipeline)
+report("Build Features Start")
+s.f_ppl= FEATURE_PPL
+s.build_features()
 report("Build Features Done",tic)
-print("Feature Selected:\t{0}".format(','.join(feature_set)))
-
-pass
 
 opt_model1(train_df, label_df)
 
-# tic=time.time()
-# report("Model training Start")
-# model = xgb_train(train_df, label_df, useTrainCV=VALIDATE)
-# report("Model training Done",tic)
+tic=time.time()
+report("Model training Start")
+s.init_model()
+s.para_tune()
+s.train()
+report("Model training Done",tic)
 
 
-# tic=time.time()
-# report("Prediction Start")
-# prediction = xgb_predict(model,test_df)
-# report("Prediction Done",tic)
+tic=time.time()
+report("Test Start")
+s.test()
+report("Test Done",tic)
 
 
-# prediction.to_csv(output_path + output_filename, float_format='%.8f', index=False)
-# report("Output Saved",tic)
-# pass
+s.save_test()
+report("Output Saved",tic)
+pass
+
+
 
 
 
