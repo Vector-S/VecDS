@@ -15,8 +15,8 @@ from lib.modellib import *
 
 VALIDATE=True
 SKIP_ROWS=range(1,109903891)
-TRAIN_ROWS=1000
-TEST_ROWS=1000
+TRAIN_ROWS=10000
+TEST_ROWS=100
 
 
 ##########################################         Path           #####################################
@@ -59,7 +59,7 @@ label_df = train_df['is_attributed']
 print("Train data size: {0}".format(train_df.shape))
 print("Test data size: {0}".format(test_df.shape))
 
-train_df.drop('is_attributed',axis=1,inplace=True)
+train_df.drop('is_attributed', axis=1, inplace=True)
 
 
 
