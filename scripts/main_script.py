@@ -15,7 +15,7 @@ from lib.modellib import *
 
 VALIDATE=True
 SKIP_ROWS=range(1,109903891)
-TRAIN_ROWS=10000
+TRAIN_ROWS=5000
 TEST_ROWS=100
 
 
@@ -71,6 +71,7 @@ def build_features(df, feature_pipeline):
     gc.collect()
     return df, feature_set
 
+
 f_pipeline = [f_base,f_1,f_1_2,f_2]
 report("Build Features Start")
 
@@ -82,26 +83,23 @@ print("Feature Selected:\t{0}".format(','.join(feature_set)))
 
 pass
 
+opt_model1(train_df, label_df)
 
-tic=time.time()
-report("Model training Start")
-model = xgb_train(train_df, label_df, useTrainCV=VALIDATE)
-report("Model training Done",tic)
-
-
-tic=time.time()
-report("Prediction Start")
-prediction = xgb_predict(model,test_df)
-report("Prediction Done",tic)
+# tic=time.time()
+# report("Model training Start")
+# model = xgb_train(train_df, label_df, useTrainCV=VALIDATE)
+# report("Model training Done",tic)
 
 
-prediction.to_csv(output_path + output_filename, float_format='%.8f', index=False)
-report("Output Saved",tic)
-pass
+# tic=time.time()
+# report("Prediction Start")
+# prediction = xgb_predict(model,test_df)
+# report("Prediction Done",tic)
 
 
-
-
+# prediction.to_csv(output_path + output_filename, float_format='%.8f', index=False)
+# report("Output Saved",tic)
+# pass
 
 
 
