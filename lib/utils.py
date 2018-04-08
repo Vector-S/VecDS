@@ -9,3 +9,9 @@ def report(msg,tic=None,print_out=True):
     report+="\n"
     if print_out:
         print(report)
+
+
+
+class Report:
+    def __init__(self):
+        total_time_cost = 0
