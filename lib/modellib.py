@@ -54,22 +54,11 @@ def xgb_pt_1(s,cv_folds=5, early_stopping_rounds=50):
     dtrain = xgb.DMatrix(s.train_df.values, label=s.label_df.values)
     cvresult = xgb.cv(xgb_param, dtrain, num_boost_round=s.model.get_params()['n_estimators'], nfold=cv_folds,
                       metrics='auc', early_stopping_rounds=early_stopping_rounds, verbose_eval=True)
+
     s.model.set_params(n_estimators=cvresult.shape[0])
     del dtrain, cvresult
     gc.collect()
 
-    model = XGBClassifier(
-                        max_depth=5,
-                        learning_rate=0.1,
-                        n_estimators=1000,
-                        objective= 'binary:logistic',
-                        n_jobs=4,
-                        gamma=0.1,
-                        min_child_weight=1,
-                        subsample=0.8, 
-                        colsample_bytree=0.8, 
-                        scale_pos_weight=1, 
-                        random_state=24)
 
 
 def xgb_pt_2(s):
@@ -105,9 +94,9 @@ def xgb_train(s,eval_metric='auc'):
 
 def xgb_save_fi(s):
     plot_importance(s.model)
-    pyplot.savefig(s.ouput_path+ s.file_name)
+    pyplot.savefig(s.output_path+ 'feature_importance.png')
 
-def xgb_test(s,test_df):
+def xgb_test(s):
     prediction = pd.DataFrame()
     prediction['is_attributed'] = s.model.predict_proba(s.test_df)[:,1]
     s.test_result = prediction

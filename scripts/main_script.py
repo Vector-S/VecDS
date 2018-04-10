@@ -13,7 +13,6 @@ from lib.featurelib import *
 from lib.modellib import *
 ########################################## Macro Control Panel #####################################
 
-VALIDATE=True
 SKIP_ROWS=range(1,109903891)
 TRAIN_ROWS=5000
 TEST_ROWS=100
@@ -27,6 +26,7 @@ METHOD = 'xgb'
 ########################################## Solution Class #################################################
 
 class Solution:
+
     output_filename = 'submission.csv'
     input_path = '../input/'
     output_path = '../output/'
@@ -95,8 +95,6 @@ class Solution:
 
     def save_test(self):
         self.test_result.to_csv(self.output_path + self.output_filename, float_format='%.8f', index=False)
-
-
 
 
 ########################################## Solution Excution #################################################
