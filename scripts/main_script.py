@@ -8,9 +8,9 @@ sys.path.append("/Users/ruixuezhang/Desktop/KaggleTAFDC")
 
 ########################################## Internal Lib #####################################
 # when releasing, move all functions used into main script
-from lib.utils import *
-from lib.featurelib import *
-from lib.modellib import *
+from veclib.utils import *
+from veclib.featurelib import *
+from veclib.modellib import *
 ########################################## Macro Control Panel #####################################
 
 SKIP_ROWS=range(1,109903891)
