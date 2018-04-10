@@ -1,4 +1,6 @@
 import time
+import pickle
+import json
 
 def report(msg,tic=None,print_out=True):
     length = 100
@@ -11,7 +13,38 @@ def report(msg,tic=None,print_out=True):
         print(report)
 
 
+def load_obj(filename):
+    try:
+        with open(filename,'r') as f:
+            pickle.load(f)
+    except Exception as e:
+        print("Can't load obj:{0}".format(str(e)))
+
+def save_obj(obj,filename):
+    try:
+        with open(filename,'wb') as f:
+            pickle.dump(obj,f,pickle.HIGHEST_PROTOCOL)
+    except Exception as e:
+        print("Can't save obj:{0}".format(str(e)))
+
+
+def load_json(filename):
+    try:
+        with open(filename,'r') as f:
+            dic =  json.load(f)
+        return dic
+    except Exception as e:
+        print("Can't load dict:{0}".format(str(e)))
+
+def save_json(dic,filename):
+    try:
+        with open(filename,'w') as f:
+            json.dump(dic,f)
+    except Exception as e:
+        print("Can't save dict:{0}".format(str(e)))
 
 class Report:
     def __init__(self):
         total_time_cost = 0
+
+

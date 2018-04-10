@@ -25,8 +25,12 @@ def xgb_init(s):
                           seed=99)
 
 
+def xgb_pt(s):
+    # to be implemented
+        pass
+
+
 def modelfit(model, train_df, label_df, useTrainCV=True, cv_folds=5, early_stopping_rounds=50):
-    
     if useTrainCV:
         xgb_param = model.get_xgb_params()
         dtrain = xgb.DMatrix(train_df.values, label=label_df.values)
@@ -35,12 +39,13 @@ def modelfit(model, train_df, label_df, useTrainCV=True, cv_folds=5, early_stopp
         model.set_params(n_estimators=cvresult.shape[0])
         del dtrain, cvresult
         gc.collect()
-
     # Fit the algorithm on the data
     model.fit(train_df, label_df, eval_metric='auc')
 
 def xgb_train(s,eval_metric='auc'):
-    modelfit(s.model, s.train_df, s.label_df)
+    modelfit(s.model,s.train_df,s.label_df)
+
+
     s.train_result = s.model.predict_proba(s.train_df)[:,1]
     print("\nModel Report")
     print("AUC Score (Train):", metrics.roc_auc_score(s.label_df.values, s.train_result))
@@ -63,7 +68,6 @@ def lgbm_init(s):
 
 def lgbm_pt(s,cv_folds=5, early_stopping_rounds=50):
     pass
-
 
 def lgbm_train(s,eval_metric='auc') :
     pass
