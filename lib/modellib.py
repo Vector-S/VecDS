@@ -49,7 +49,7 @@ def xgb_save_fi(s):
 
 def xgb_test(s,test_df):
     prediction = pd.DataFrame()
-    prediction['is_attributed'] = s.model.predict(s.test_df)
+    prediction['is_attributed'] = s.model.predict_proba(s.test_df)
     s.test_result = prediction
 
 
