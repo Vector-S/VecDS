@@ -11,8 +11,6 @@ import gc
 
 ################################################# XGBoost #################################################
 
-######################### Workflow #########################
-
 def xgb_init(s):
     s.model =  XGBClassifier(learning_rate=0.3,
                           n_estimators=1000,
@@ -47,45 +45,15 @@ def xgb_train(s,eval_metric='auc'):
     print("\nModel Report")
     print("AUC Score (Train):", metrics.roc_auc_score(s.label_df.values, s.train_result))
 
+
 def xgb_save_fi(s):
     plot_importance(s.model)
-    pyplot.savefig(s.output_path+ s.file_name)
+    pyplot.savefig(s.output_path+ 'feature_importance.png')
 
-def xgb_test(s,test_df):
+def xgb_test(s):
     prediction = pd.DataFrame()
     prediction['is_attributed'] = s.model.predict_proba(s.test_df)[:,1]
     s.test_result = prediction
-
-
-################# Tune Model Hyperparameters #################
-
-
-def xgb_pt_1(s):
-    param_test1 = {'max_depth':list(range(3,10,2)),
-                   'min_child_weight':list(range(1,6,2))
-                   }
-    gsearch1 = GridSearchCV(
-        estimator = XGBClassifier(
-                                max_depth=5,
-                                learning_rate=0.1,
-                                n_estimators=1000,
-                                objective= 'binary:logistic',
-                                nthread=4,
-                                gamma=0.1,
-                                min_child_weight=1,
-                                subsample=0.8,
-                                colsample_bytree=0.8,
-                                scale_pos_weight=1,
-                                random_state=24),
-        param_grid = param_test1,
-        scoring='roc_auc',
-        n_jobs=4,
-        iid=False,
-        cv=5)
-    gsearch1.fit(s.train_df, s.label_df)
-    print(gsearch1.grid_scores_, gsearch1.best_params_, gsearch1.best_score_)
-
-
 
 
 ################################ LightGBM ############################################
