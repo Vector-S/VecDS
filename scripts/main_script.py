@@ -15,7 +15,7 @@ from lib.modellib import *
 
 VALIDATE=True
 SKIP_ROWS=range(1,109903891)
-TRAIN_ROWS=10000
+TRAIN_ROWS=5000
 TEST_ROWS=100
 
 FEATURE_PPL = [f_base,f_1,f_1_2,f_2]
@@ -76,7 +76,7 @@ class Solution:
 
     def para_tune(self):
         if self.method == 'xgb':
-            xgb_pt(self)
+            xgb_pt_1(self)
         elif self.method == 'lgbm':
             pass
 
@@ -116,6 +116,7 @@ s.build_features()
 report("Build Features Done",tic)
 
 
+
 tic=time.time()
 report("Model training Start")
 s.init_model()
@@ -133,8 +134,6 @@ report("Test Done",tic)
 s.save_test()
 report("Output Saved",tic)
 pass
-
-
 
 
 
