@@ -8,57 +8,131 @@ sys.path.append("/Users/ruixuezhang/Desktop/KaggleTAFDC")
 
 ########################################## Internal Lib #####################################
 # when releasing, move all functions used into main script
-from veclib.solution import *
+from veclib.utils import *
+from veclib.featurelib import *
+from veclib.modellib import *
+from veclib.ptlib import *
 ########################################## Macro Control Panel #####################################
 
-SKIP_TRAIN_ROWS=range(1,109903891)
-NUM_TRAIN_ROWS=5000
-NUM_TEST_ROWS=100
+SKIP_ROWS=range(1,109903891)
+TRAIN_ROWS=5000
+TEST_ROWS=100
+
 FEATURE_PPL = [f_base,f_1,f_1_2,f_2]
 METHOD = 'xgb'
-PARA_TUNE = False
-RELEASE = True
-PARA_TUNE_CFG = './cfg/default.cfg'
+##########################################         Path           #####################################
 
-##########################################         Setting up           #####################################
 
-d = DataSet()
-d.skip_train_rows=SKIP_TRAIN_ROWS
-d.num_train_rows = NUM_TRAIN_ROWS
-d.num_test_rows= NUM_TEST_ROWS
 
+########################################## Solution Class #################################################
+
+class Solution:
+
+    output_filename = 'submission.csv'
+    input_path = '../input/'
+    output_path = '../output/'
+    train_file = 'train.csv'
+    test_file = 'test.csv'
+
+    def __init__(self):
+        train_df = None
+        label_df = None
+        test_df = None
+        f_ppl = []
+        train_f_set = None
+        test_f_set =None
+        model = None
+        train_result = None
+        test_result = None
+        log= None
+        method = None
+
+    def load_data(self):
+        train_cols = ['ip', 'app', 'device', 'os', 'channel', 'click_time', 'is_attributed']
+        test_cols = ['ip', 'app', 'device', 'os', 'channel', 'click_time', 'click_id']
+        dtypes = {
+            'ip': 'uint32',
+            'app': 'uint16',
+            'device': 'uint16',
+            'os': 'uint16',
+            'channel': 'uint16',
+            'is_attributed': 'uint8',
+            'click_id': 'uint32'
+        }
+        self.train_df = pd.read_csv(self.input_path+self.train_file, skiprows=SKIP_ROWS, nrows=TRAIN_ROWS, dtype=dtypes,
+                               usecols=train_cols)
+        self.test_df = pd.read_csv(self.input_path +self.test_file, dtype=dtypes, nrows=TEST_ROWS, usecols=test_cols)
+        self.label_df = self.train_df['is_attributed']
+
+    def build_features(self):
+        self.train_df,self.train_f_set = build_features(self.train_df,self.f_ppl)
+        self.test_df,self.test_f_set = build_features(self.test_df,self.f_ppl)
+        print("Feature Selected:\t{0}".format(','.join(self.train_f_set)))
+
+    def init_model(self):
+        if self.method == 'xgb':
+            xgb_init(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def para_tune(self):
+        if self.method == 'xgb':
+            xgb_pt4(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def train(self):
+        if self.method == 'xgb':
+            xgb_train(self)
+            xgb_save_fi(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def test(self):
+        if self.method == 'xgb':
+            xgb_test(self)
+        elif self.method == 'lgbm':
+            pass
+
+    def save_test(self):
+        self.test_result.to_csv(self.output_path + self.output_filename, float_format='%.8f', index=False)
+
+
+########################################## Solution Excution #################################################
 s = Solution()
-s.data_set = d
 s.method = METHOD
+
+report("Load Dataset Start")
+tic = time.time()
+s.load_data()
+report("Load Dataset Done",tic)
+
+
+tic = time.time()
+report("Build Features Start")
 s.f_ppl= FEATURE_PPL
-s.para_tune_fcg = PARA_TUNE_CFG
-
-##########################################            Excution                ##################################
-
-s.load_dataset()
 s.build_features()
-s.init_model()
+report("Build Features Done",tic)
 
-if PARA_TUNE:
-    while(1):
-        s.para_tune()
-        report("Choose your option.")
-        option = input("\n\nDo you want to continue tuning parameter ?[Y/N]\n")
-        if option=='N':break
-        else:
-            while(1):
-                try:
-                    s.para_tune_fcg = input("\nPlease specify a new cfg file:\n")
-                    cfg = load_json(s.para_tune_fcg)
-                    print("To double check, your cfg file is:\n{0}\n{1}".format(s.para_tune_fcg,cfg))
-                    confirm = input("\nPlease confirm [Y/N]:\n")
-                except Exception as e:
-                    continue
-                if confirm=='Y':break
-if RELEASE:
-    s.train()
-    s.test()
-    s.save_test()
+
+
+tic=time.time()
+report("Model training Start")
+s.init_model()
+s.para_tune()
+# s.train()
+report("Model training Done",tic)
+
+
+# tic=time.time()
+# report("Test Start")
+# s.test()
+# report("Test Done",tic)
+
+
+# s.save_test()
+# report("Output Saved",tic)
+pass
 
 
 

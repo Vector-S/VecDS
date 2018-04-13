@@ -25,9 +25,6 @@ def xgb_init(s):
                           seed=99)
 
 
-def xgb_pt(s):
-    # to be implemented
-        pass
 
 
 def modelfit(model, train_df, label_df, useTrainCV=True, cv_folds=5, early_stopping_rounds=50):
