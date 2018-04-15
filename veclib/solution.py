@@ -27,9 +27,7 @@ class DataSet:
     def load_dataset(self,s):
         s.train_df = pd.read_csv(s.input_path+self.train_file, skiprows=self.skip_train_rows, nrows=self.num_train_rows, dtype=self.dtypes,
                                usecols=self.train_cols)
-
         s.test_df = pd.read_csv(s.input_path +self.test_file, dtype=self.dtypes, nrows=self.num_test_rows, usecols=self.test_cols)
-
         s.label_df = s.train_df[self.label_name]
 
 

@@ -53,6 +53,12 @@ def f_1_2(df,fs):
     return df, fs
 
 def f_2(df,fs):
+    """
+
+    :param df:
+    :param fs:
+    :return:
+    """
     most_freq_hours_in_test_data = [4, 5, 9, 10, 13, 14]
     least_freq_hours_in_test_data = [6, 11, 15]
     df['in_test_hh'] = (3
@@ -144,26 +150,6 @@ def f_c_4_1(df,fs):
     df, new_feature = f_template(df, gb_dict)
     fs.add(new_feature)
     return df, fs
-
-    # # Mean hour, for ip-app-channel
-    # {'groupby': ['ip','app','channel'], 'select': 'hour', 'agg': 'mean', 'type': 'float32', 'type': 'float32'}
-
-    # # Variance in day, for ip-app-channel
-    # {'groupby': ['ip','app','channel'], 'select': 'day', 'agg': 'var', 'type': 'float32'}
-    # # Variance in day, for ip-app-device
-    # {'groupby': ['ip','app','device'], 'select': 'day', 'agg': 'var', 'type': 'float32'}
-    # # Variance in day, for ip-app-os
-    # {'groupby': ['ip','app','os'], 'select': 'day', 'agg': 'var', 'type': 'float32'}
-
-    # # Variance in hour, for ip-app-channel
-    # {'groupby': ['ip','app','channel'], 'select': 'hour', 'agg': 'var'}
-    # # Variance in hour, for ip-app-device
-    # {'groupby': ['ip','app','device'], 'select': 'hour', 'agg': 'var'}
-    # # Variance in hour, for ip-app-os
-    # {'groupby': ['ip','app','os'], 'select': 'hour', 'agg': 'var'}
-
-
-
 
 if __name__ == "__main__":
     train_df = pd.read_csv('../input/train.csv', nrows=1000)
