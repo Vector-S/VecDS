@@ -15,7 +15,7 @@ def report(msg,tic=None,print_out=True):
 
 def load_obj(filename):
     try:
-        with open(filename,'r') as f:
+        with open(filename,'rb') as f:
             obj =  pickle.load(f)
             return obj
     except Exception as e:

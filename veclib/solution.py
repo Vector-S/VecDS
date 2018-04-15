@@ -1,4 +1,5 @@
 from veclib.modellib import *
+from veclib.ptlib import *
 from veclib.featurelib import *
 from veclib.utils import *
 
@@ -50,7 +51,7 @@ class Solution:
     input_path = '../input/'
     output_path = '../output/'
     data_set = None
-
+    transductive =False
     para_tune_fcg = None
 
     def __init__(self):
@@ -65,10 +66,23 @@ class Solution:
     def build_features(self):
         tic = time.time()
         report("Build Features Start")
-        self.train_df, self.train_f_set = build_features(self.train_df, self.f_ppl)
-        self.test_df, self.test_f_set = build_features(self.test_df, self.f_ppl)
+        if self.transductive:
+            merge = pd.concat([self.train_df, self.test_df])
+            merge, f_set = build_features(merge, self.f_ppl)
+            self.train_f_set = f_set
+            self.test_f_set = f_set
+            self.train_df = merge[:self.train_df.shape[0]]
+            self.test_df = merge[self.train_df.shape[0]:]
+        else:
+            self.train_df, self.train_f_set = build_features(self.train_df, self.f_ppl)
+            self.test_df, self.test_f_set = build_features(self.test_df, self.f_ppl)
+            if self.train_f_set !=self.test_f_set:
+                print("Warning training featue set is different with testing feature set")
+
         print("Feature Selected:\t{0}".format(','.join(self.train_f_set)))
         report("Build Features Done", tic)
+        print(self.train_df.head(5))
+        print(self.test_df.head(5))
 
     def init_model(self):
         if self.method == 'xgb':
