@@ -69,10 +69,8 @@ class Solution:
         if self.transductive:
             merge = pd.concat([self.train_df, self.test_df])
             merge, f_set = build_features(merge, self.f_ppl)
-            self.train_f_set = f_set
-            self.test_f_set = f_set
-            self.train_df = merge[:self.train_df.shape[0]]
-            self.test_df = merge[self.train_df.shape[0]:]
+            self.train_f_set,self.test_f_set = f_set,f_set
+            self.train_df, self.test_df = merge[:self.train_df.shape[0]],merge[self.train_df.shape[0]:].reset_index(drop=True)
         else:
             self.train_df, self.train_f_set = build_features(self.train_df, self.f_ppl)
             self.test_df, self.test_f_set = build_features(self.test_df, self.f_ppl)

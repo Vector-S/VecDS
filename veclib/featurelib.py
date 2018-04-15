@@ -13,48 +13,72 @@ def build_features(df, feature_pipeline):
 
 
 def f_template(df, gb_dict):
-    
     all_features = list(set(gb_dict['groupby'] + [gb_dict['select']]))
     ## name of new feature
-    new_feature = '{}_{}_{}'.format('_'.join(gb_dict['groupby']), gb_dict['agg'], gb_dict['select'])
+    if gb_dict['agg']=='count':
+        f_name = '{}_{}'.format('_'.join(gb_dict['groupby']), gb_dict['agg'])
+    else:
+        f_name = '{}_{}_{}'.format('_'.join(gb_dict['groupby']), gb_dict['agg'], gb_dict['select'])
     ## perfom the grouby
     gp = df[all_features]. \
         groupby(gb_dict['groupby'])[gb_dict['select']]. \
         agg(gb_dict['agg']). \
         reset_index(). \
-        rename(index=str, columns={gb_dict['select']: new_feature}).astype(gb_dict['type'])
+        rename(index=str, columns={gb_dict['select']: f_name}).astype(gb_dict['type'])
     # Merge back to df
     df = df.merge(gp, on=gb_dict['groupby'], how='left')
     del gp
     gc.collect()
-    return df,new_feature
+    return df,f_name
 
+#######################  feature definition zone #######################
 def f_base(df,fs):
     fs= fs | {'ip', 'app', 'device', 'os', 'channel'}
     return df, fs
 
 
-def f_1(df,fs):
-    df['hour'] = pd.to_datetime(df.click_time).dt.hour.astype('uint8')
-    df['day'] = pd.to_datetime(df.click_time).dt.day.astype('uint8')
+def f_hour(df,fs):
+    f_name = 'hour'
+    df[f_name] = pd.to_datetime(df.click_time).dt.hour.astype('uint8')
     gc.collect()
-    fs.add('hour')
-    fs.add('day')
+    fs.add(f_name)
     return df, fs
 
-def f_1_2(df,fs):
-    click_time= pd.to_datetime(df.click_time)
-    df['click_rnd']=click_time.dt.round('H')
-    df['hour'] = pd.to_datetime(df.click_rnd).dt.hour.astype('uint8')
-    df['day'] = pd.to_datetime(df.click_rnd).dt.day.astype('uint8')
-    df.drop('click_rnd',axis=1,inplace=True)
-    fs =fs|{'hour','day'}
+def f_dfw(df,fs):
+    f_name = 'dayofweek'
+    df[f_name] = pd.to_datetime(df.click_time).dt.dayofweek.astype('uint8')
     gc.collect()
+    fs.add(f_name)
     return df, fs
+
+
+def f_count(df,fs):
+    groupby_list = [['ip'],['os','device'],['os','device','hour'],['app','channel'],['ip','hour']]
+    select = 'click_time'
+    agg = 'count'
+    type = 'uint32'
+    for groupby in groupby_list:
+        gb_dict = {'groupby': groupby, 'select': select, 'agg': agg, 'type': type}
+        df, f_name = f_template(df, gb_dict)
+        fs.add(f_name)
+    return df,fs
+
+def f_mean(df,fs):
+    # Count, for ip
+    groupby_list = [['ip'],['os','device']]
+    select = 'hour'
+    agg = 'mean'
+    type = 'uint32'
+    for groupby in groupby_list:
+        gb_dict = {'groupby': groupby, 'select': select, 'agg': agg, 'type': type}
+        df, f_name = f_template(df, gb_dict)
+        fs.add(f_name)
+    fs.add(f_name)
+    return df, fs
+
 
 def f_2(df,fs):
     """
-
     :param df:
     :param fs:
     :return:
@@ -74,82 +98,16 @@ def f_2(df,fs):
     fs |= {'nip_day_test_hh'}
     return df, fs
 
-def f_c_1_1(df,fs):
-    # Count, for ip
-    gb_dict = {'groupby': ['ip'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
+def f_1_2(df,fs):
+    click_time= pd.to_datetime(df.click_time)
+    df['click_rnd']=click_time.dt.round('H')
+    df['hour'] = pd.to_datetime(df.click_rnd).dt.hour.astype('uint8')
+    df['day'] = pd.to_datetime(df.click_rnd).dt.day.astype('uint8')
+    df.drop('click_rnd',axis=1,inplace=True)
+    fs =fs|{'hour','day'}
+    gc.collect()
     return df, fs
 
-def f_c_1_2(df,fs):
-    # Count, for app
-    gb_dict = {'groupby': ['app'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_1_3(df,fs):
-    # Count, for device
-    gb_dict = {'groupby': ['device'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_1_4(df,fs):
-    # Count, for os
-    gb_dict = {'groupby': ['os'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_1_5(df,fs):
-    # Count, for channel
-    gb_dict = {'groupby': ['channel'], 'select': 'os', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_2_1(df,fs):
-    # Count, for ip-app
-    gb_dict = {'groupby': ['ip', 'app'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}  
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_2_2(df,fs):
-    # Count, for ip-day
-    gb_dict = {'groupby': ['ip','day'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_2_3(df,fs):
-    # Count, for ip-hour
-    gb_dict = {'groupby': ['ip','hour'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_3_1(df,fs):
-    # Count, for ip-day-hour
-    gb_dict = {'groupby': ['ip','day','hour'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_3_2(df,fs):
-    # Count, for ip-app-os
-    gb_dict = {'groupby': ['ip', 'app', 'os'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
-
-def f_c_4_1(df,fs):
-    # Count, for ip-app-day-hour
-    gb_dict = {'groupby': ['ip','app','day','hour'], 'select': 'channel', 'agg': 'count', 'type': 'uint32'}
-    df, new_feature = f_template(df, gb_dict)
-    fs.add(new_feature)
-    return df, fs
 
 if __name__ == "__main__":
     train_df = pd.read_csv('../input/train.csv', nrows=1000)
@@ -157,14 +115,6 @@ if __name__ == "__main__":
     ## test f_base
     train_df, fs = f_base(train_df, set())
     assert fs == {'ip', 'app', 'device', 'os', 'channel'}
-
-    ## test f_1
-    train_df, fs = f_1_2(train_df, fs)
-    assert fs == {'ip', 'app', 'device', 'os', 'channel', 'hour', 'day'}
-
-    ## test f_2
-    train_df, fs = f_2(train_df, fs)
-    assert fs == {'ip', 'app', 'device', 'os', 'channel', 'hour', 'day','nip_day_test_hh'}
 
     ## test f_template
     gb_dict1 = {'groupby': ['ip'], 'select': 'channel', 'agg': 'count', 'type': 'float32', 'type': 'float32'}
