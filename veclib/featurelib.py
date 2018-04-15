@@ -63,7 +63,7 @@ def f_count(df,fs):
         fs.add(f_name)
     return df,fs
 
-def f_mean(df,fs):
+def f_mean_hour(df,fs):
     # Count, for ip
     groupby_list = [['ip'],['os','device']]
     select = 'hour'
