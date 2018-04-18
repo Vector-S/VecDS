@@ -112,6 +112,7 @@ class Solution:
         report("Test Done", tic)
 
     def save_test(self):
+        check_dir(self.output_path)
         self.test_result.to_csv(self.output_path + self.result_filename, float_format='%.8f', index=False)
 
 

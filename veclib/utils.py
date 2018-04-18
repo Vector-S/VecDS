@@ -1,6 +1,7 @@
 import time
 import pickle
 import json
+import os
 
 def report(msg,tic=None,print_out=True):
     length = 100
@@ -45,6 +46,11 @@ def save_json(dic,filename):
             json.dump(dic,f)
     except Exception as e:
         print("Can't save dict:{0}".format(str(e)))
+
+
+def check_dir(dir):
+  if not os.path.exists(dir):
+    os.makedirs(dir)
 
 class Report:
     def __init__(self):
