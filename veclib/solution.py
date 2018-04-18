@@ -48,8 +48,8 @@ class Solution:
     log = None
     method = 'xgb'
     result_filename = 'submission.csv'
-    input_path = './input/'
-    output_path = './output/'
+    input_path = '../input/'
+    output_path = '../output/'
     data_set = None
     transductive =False
     para_tune_fcg = None
@@ -58,14 +58,12 @@ class Solution:
         pass
 
     def load_dataset(self):
-        report("Load Dataset Start")
-        tic = time.time()
+        tic = report("Load Dataset Start")
         self.data_set.load_dataset(self)
         report("Load Dataset Done", tic)
 
     def build_features(self):
-        tic = time.time()
-        report("Build Features Start")
+        tic = report("Build Features Start")
         if self.transductive:
             merge = pd.concat([self.train_df, self.test_df])
             merge, f_set = build_features(merge, self.f_ppl)
@@ -89,8 +87,7 @@ class Solution:
             pass
 
     def para_tune(self):
-        tic = time.time()
-        report("Parameter Tuning Start")
+        tic = report("Parameter Tuning Start")
         if self.method == 'xgb':
             xgb_pt(self)
         elif self.method == 'lgbm':
@@ -98,8 +95,7 @@ class Solution:
         report("Parameter Tuning Done", tic)
 
     def train(self):
-        tic = time.time()
-        report("Model training Start")
+        tic = report("Model training Start")
         if self.method == 'xgb':
             xgb_train(self)
             xgb_save_fi(self)
@@ -108,8 +104,7 @@ class Solution:
         report("Model training Done", tic)
 
     def test(self):
-        tic = time.time()
-        report("Test Start")
+        tic = report("Test Start")
         if self.method == 'xgb':
             xgb_test(self)
         elif self.method == 'lgbm':

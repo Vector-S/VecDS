@@ -11,6 +11,8 @@ def report(msg,tic=None,print_out=True):
     report+="\n"
     if print_out:
         print(report)
+    if not tic:
+        return time.time()
 
 
 def load_obj(filename):

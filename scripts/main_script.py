@@ -21,9 +21,11 @@ NUM_TRAIN_ROWS=5000
 NUM_TEST_ROWS=100
 FEATURE_PPL = [f_base,f_hour,f_dfw,f_count,f_mean_hour]
 METHOD = 'xgb'
-TRANSDUCTIVE = True
+TRANSDUCTIVE = False
 PARA_TUNE = False
 RELEASE = True
+INPUT_PATH = './input/'
+OUTPUT_PATH = './output/'
 PARA_TUNE_CFG = './cfg/default.cfg'
 
 ##########################################         Setting up           #####################################
@@ -41,6 +43,8 @@ s.method = METHOD
 s.f_ppl= FEATURE_PPL
 s.para_tune_fcg = PARA_TUNE_CFG
 s.transductive = TRANSDUCTIVE
+s.input_path =INPUT_PATH
+s.output_path=OUTPUT_PATH
 ##########################################            Excution                ##################################
 
 s.load_dataset()
