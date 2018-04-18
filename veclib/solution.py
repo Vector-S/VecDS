@@ -48,8 +48,8 @@ class Solution:
     log = None
     method = 'xgb'
     result_filename = 'submission.csv'
-    input_path = '../input/'
-    output_path = '../output/'
+    input_path = './input/'
+    output_path = './output/'
     data_set = None
     transductive =False
     para_tune_fcg = None
