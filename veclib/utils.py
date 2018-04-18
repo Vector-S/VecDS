@@ -49,8 +49,8 @@ def save_json(dic,filename):
 
 
 def check_dir(dir):
-  if not os.path.exists(dir):
-    os.makedirs(dir)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
 
 class Report:
     def __init__(self):
