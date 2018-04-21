@@ -53,9 +53,10 @@ def xgb_save_fi(s):
     pyplot.savefig(s.output_path+ 'feature_importance.png')
 
 def xgb_test(s):
-    prediction = pd.DataFrame()
-    prediction['is_attributed'] = s.model.predict_proba(s.test_df)[:,1]
-    s.test_result = prediction
+    s.test_result = pd.DataFrame()
+    s.test_result['is_attributed'] = s.model.predict_proba(s.test_df)[:,1]
+    s.test_result['click_id']=s.test_result.index
+    pass
 
 
 ################################ LightGBM ############################################
