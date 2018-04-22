@@ -21,7 +21,7 @@ def xgb_init(s):
                           subsample=0.9,
                           colsample_bytree=0.7,
                           reg_alpha=4,
-                          scale_pos_weight=0.9,
+                          scale_pos_weight=9,
                           seed=99)
 
 
