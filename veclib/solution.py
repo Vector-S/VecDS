@@ -25,11 +25,15 @@ class DataSet:
     def __init__(self):
         pass
 
-    def load_dataset(self,s):
+
+    def load_train(self,s):
         s.train_df = pd.read_csv(s.input_path+self.train_file, skiprows=self.skip_train_rows, nrows=self.num_train_rows, dtype=self.dtypes,
                                usecols=self.train_cols)
-        s.test_df = pd.read_csv(s.input_path +self.test_file, dtype=self.dtypes, nrows=self.num_test_rows, usecols=self.test_cols)
         s.label_df = s.train_df[self.label_name]
+
+    def load_test(self,s):
+        s.test_df = pd.read_csv(s.input_path +self.test_file, dtype=self.dtypes, nrows=self.num_test_rows, usecols=self.test_cols)
+
 
 
 class Solution:
@@ -59,20 +63,30 @@ class Solution:
 
     def load_dataset(self):
         tic = report("Load Dataset Start")
-        self.data_set.load_dataset(self)
+        if self.transductive:
+            self.data_set.load_train(self)
+            self.data_set.load_test(self)
+        else:
+            self.data_set.load_test(self)
         report("Load Dataset Done", tic)
 
     def build_features(self):
         tic = report("Build Features Start")
         if self.transductive:
             merge = pd.concat([self.train_df, self.test_df])
+
             merge, f_set = build_features(merge, self.f_ppl)
+
             self.train_f_set,self.test_f_set = f_set,f_set
+
             self.train_df, self.test_df = merge[:self.train_df.shape[0]],merge[self.train_df.shape[0]:].reset_index(drop=True)
         else:
             self.train_df, self.train_f_set = build_features(self.train_df, self.f_ppl)
+
             self.test_df, self.test_f_set = build_features(self.test_df, self.f_ppl)
+
             if self.train_f_set !=self.test_f_set:
+
                 print("Warning training featue set is different with testing feature set")
 
         print("Feature Selected:\t{0}".format(','.join(self.train_f_set)))

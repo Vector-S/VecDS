@@ -1,10 +1,18 @@
-import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
-from sklearn.model_selection import train_test_split  # for validation
-import gc  # memory
-from datetime import datetime  # train time checking
 import time
-import sys
-sys.path.append("/Users/ruixuezhang/Desktop/KaggleTAFDC")
+import pickle
+import json
+import os
+import pandas as pd
+import xgboost as xgb
+from xgboost import XGBClassifier, plot_importance
+from sklearn import cross_validation, metrics
+from matplotlib import pyplot
+import gc
+
+
+
+
+
 
 ########################################## Internal Lib #####################################
 # when releasing, move all functions used into main script
@@ -18,11 +26,11 @@ TRAIN_FILE = 'train.csv'
 TEST_FILE= 'test.csv'
 MAX_TRAIN_ROWS = 184903889
 MAX_TEST_ROWS =  18790468
-NUM_TRAIN_ROWS=1000000
+NUM_TRAIN_ROWS=100000
 NUM_TEST_ROWS=None
 SKIP_TRAIN_ROWS=range(1,MAX_TRAIN_ROWS-NUM_TRAIN_ROWS)
 
-FEATURE_PPL = [f_base,f_hour,f_dfw,f_count,f_mean_hour]
+FEATURE_PPL = [f_base,f_hour,f_count,f_mean_hour]
 METHOD = 'xgb'
 TRANSDUCTIVE = False
 PARA_TUNE = False
