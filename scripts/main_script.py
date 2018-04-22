@@ -16,17 +16,20 @@ from veclib.utils import *
 ########################################## Macro Control Panel #####################################
 TRAIN_FILE = 'train.csv'
 TEST_FILE= 'test.csv'
-SKIP_TRAIN_ROWS=range(1,109903891)
-NUM_TRAIN_ROWS=5000
-NUM_TEST_ROWS=100
+MAX_TRAIN_ROWS = 184903889
+MAX_TEST_ROWS =  18790468
+NUM_TRAIN_ROWS=1000000
+NUM_TEST_ROWS=None
+SKIP_TRAIN_ROWS=range(1,MAX_TRAIN_ROWS-NUM_TRAIN_ROWS)
+
 FEATURE_PPL = [f_base,f_hour,f_dfw,f_count,f_mean_hour]
 METHOD = 'xgb'
 TRANSDUCTIVE = False
 PARA_TUNE = False
 RELEASE = True
-INPUT_PATH = './input/'
-OUTPUT_PATH = './output/'
-PARA_TUNE_CFG = './cfg/default.cfg'
+INPUT_PATH = '../input/'
+OUTPUT_PATH = '../output/'
+PARA_TUNE_CFG = '../cfg/default.cfg'
 
 ##########################################         Setting up           #####################################
 

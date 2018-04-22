@@ -56,6 +56,7 @@ def xgb_test(s):
     s.test_result = pd.DataFrame()
     s.test_result['is_attributed'] = s.model.predict_proba(s.test_df)[:,1]
     s.test_result['click_id']=s.test_result.index
+    s.test_result = s.test_result['click_id','is_attributed']
     pass
 
 
