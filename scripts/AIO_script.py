@@ -254,7 +254,7 @@ SKIP_TRAIN_ROWS=range(1,MAX_TRAIN_ROWS-NUM_TRAIN_ROWS)
 
 FEATURE_PPL = [f_base,f_hour,f_count,f_mean_hour]
 METHOD = 'xgb'
-TRANSDUCTIVE = False
+TRANSDUCTIVE = True
 INPUT_PATH = '../input/'
 OUTPUT_PATH = '../output/'
 PARA_TUNE_CFG = '../cfg/default.cfg'

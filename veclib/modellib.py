@@ -41,8 +41,6 @@ def modelfit(model, train_df, label_df, useTrainCV=True, cv_folds=5, early_stopp
 
 def xgb_train(s,eval_metric='auc'):
     modelfit(s.model,s.train_df,s.label_df)
-
-
     s.train_result = s.model.predict_proba(s.train_df)[:,1]
     print("\nModel Report")
     print("AUC Score (Train):", metrics.roc_auc_score(s.label_df.values, s.train_result))
