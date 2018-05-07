@@ -48,3 +48,5 @@ tmtagsHistory
 *.sublime-project
 *.sublime-workspace
 .bundle
+.ipynb_checkpoints/
+
