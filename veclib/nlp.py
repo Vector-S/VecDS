@@ -37,5 +37,5 @@ def nltk_parser(text):
         df_tag = pd.DataFrame(tagged,columns = ['Word','Tag'])
         return df_tag
     except:
-        print "Exception: nltk_parser(text)"
+        print("Exception: nltk_parser(text)")
         return None
