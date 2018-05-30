@@ -47,6 +47,22 @@ def save_json(dic,filename):
     except Exception as e:
         print("Can't save dict:{0}".format(str(e)))
 
+def load_list(filename):
+  list_=[]
+  with open(filename, "r") as f:
+    for i,line in enumerate(f):
+      list_.append(line.strip())
+  return list_
+
+def write_list(list_, filename):
+  with open(filename, 'w') as f:
+    for filename in list_:
+      print>>f,filename
+
+def append_list(str, filename):
+  with open(filename, 'a') as f:
+    print>>f,str
+
 
 def check_dir(dir):
     if not os.path.exists(dir):
