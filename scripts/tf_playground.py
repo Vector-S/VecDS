@@ -69,10 +69,3 @@ LOG_DIR = os.path.join(PROJECT_DIR,'log/tf')
 
 writer = tf.summary.FileWriter(LOG_DIR,tf.get_default_graph())
 writer.close()
-
-import subprocess
-import sys
-# PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
-#
-# LOG_DIR = os.path.join(PROJECT_DIR,'log/tf/tf_log')
-# subprocess.run("tensorboard --logdir='{LOG_DIR}'".format(LOG_DIR=LOG_DIR))
