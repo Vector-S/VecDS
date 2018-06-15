@@ -39,3 +39,40 @@ sess2 = tf.InteractiveSession(config = config)
 
 weights = tf.Variable(tf.random_normal([2,3],stddev=2))
 print("weights=",weights)
+
+
+
+
+w1 = tf.Variable(tf.random_normal([2,3],stddev=1,seed=1))
+w2 = tf.Variable(tf.random_normal([3,1],stddev=1,seed=1))
+x = tf.constant([[0.7,0.9]])
+a = tf.matmul(x,w1)
+y= tf.matmul(a,w2)
+
+sess = tf.Session()
+sess.run(w1.initializer)
+sess.run(w2.initializer)
+print(sess.run(y))
+sess.close()
+
+
+sess = tf.Session()
+init_op = tf.global_variables_initializer()
+sess.run(init_op)
+print(sess.run(y))
+sess.close()
+
+PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
+
+LOG_DIR = os.path.join(PROJECT_DIR,'log/tf')
+
+
+writer = tf.summary.FileWriter(LOG_DIR,tf.get_default_graph())
+writer.close()
+
+import subprocess
+import sys
+# PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
+#
+# LOG_DIR = os.path.join(PROJECT_DIR,'log/tf/tf_log')
+# subprocess.run("tensorboard --logdir='{LOG_DIR}'".format(LOG_DIR=LOG_DIR))
